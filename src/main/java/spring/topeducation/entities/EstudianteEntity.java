@@ -20,15 +20,16 @@ public class EstudianteEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id_estudiante", unique=true, nullable = false)
     private Long id_estudiante;
-    private int rut;
+    private String rut;
     private String nombre;
     private String apellidos;
     private Date fecha_nacimiento;
-    private int año_egreso;
+    private Integer año_egreso;
+    private String nombre_colegio;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "id_colegio")
-    private ColegioEntity colegio;
+    @JoinColumn(name = "id_categoria")
+    private CategoriaEntity categoria;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "id_cuota")
@@ -41,13 +42,18 @@ public class EstudianteEntity {
     private List<PagoEntity> pagos = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "id_excedente")
+    @JsonIgnore
+    private List<EstudianteEntity> excedentes = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "id_puntaje")
     @JsonIgnore
     private List<PuntajeEntity> puntajes = new ArrayList<>();
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "puntaje_id", referencedColumnName = "puntaje_id")
-    private PuntajeEntity puntaje;
+    @JoinColumn(name = "id_metodo_pago")
+    private MetodoPagoEntity metodopago;
 }
 
 

@@ -20,10 +20,11 @@ public class CategoriaEntity {
     @Column(name="id_categoria", unique=true, nullable = false)
     private Long id_categoria;
     private String colegio_categoria;
-    private double descuento;
+    private Double descuento;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "id_colegio")
+    @JoinColumn(name = "id_estudiante")
     @JsonIgnore
-    private List<ColegioEntity> colegios = new ArrayList<>();
+    private List<EstudianteEntity> estudiantes = new ArrayList<>();
+
 }

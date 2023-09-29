@@ -17,7 +17,7 @@ public class PagoEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id_pago", unique=true, nullable = false)
     private Long id_pago;
-    private int monto;
+    private Integer monto;
     private Date fecha_de_pago;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)

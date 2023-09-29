@@ -17,6 +17,6 @@ public class MetodoPagoEntity {
     private Long id_metodo_pago;
     private String tipo_pago;
 
-    @OneToOne(mappedBy = "estudiante")
+    @OneToOne(mappedBy = "metodopago")
     private EstudianteEntity estudiante;
 }

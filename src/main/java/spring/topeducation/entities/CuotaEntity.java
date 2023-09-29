@@ -17,8 +17,8 @@ public class CuotaEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id_cuota", unique=true, nullable = false)
     private Long id_cuota;
-    private Boolean status_cuota;
-    private int valor_cuota;
+    private String status_cuota;
+    private Integer valor_cuota;
     private Date fecha_inicio_pagar;
     private Date fecha_inicio_deuda;
 
