@@ -51,9 +51,9 @@ public class EstudianteEntity {
     @JsonIgnore
     private List<PuntajeEntity> puntajes = new ArrayList<>();
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "id_metodo_pago")
-    private MetodoPagoEntity metodopago;
+    private MetodoPagoEntity metodoPago;
 }
 
 

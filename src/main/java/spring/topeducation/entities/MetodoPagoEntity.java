@@ -1,9 +1,13 @@
 package spring.topeducation.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name="metodopago")
@@ -16,7 +20,10 @@ public class MetodoPagoEntity {
     @Column(name="id_metodo_pago", unique=true, nullable = false)
     private Long id_metodo_pago;
     private String tipo_pago;
+    private Double descuento;
 
-    @OneToOne(mappedBy = "metodopago")
-    private EstudianteEntity estudiante;
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "id_estudiante")
+    @JsonIgnore
+    private List<EstudianteEntity> estudiantes = new ArrayList<>();
 }
