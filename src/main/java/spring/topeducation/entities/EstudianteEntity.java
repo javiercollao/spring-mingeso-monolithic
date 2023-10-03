@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -20,16 +21,21 @@ public class EstudianteEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id_estudiante", unique=true, nullable = false)
     private Long id_estudiante;
+
     private String rut;
     private String nombre;
     private String apellidos;
-    private Date fecha_nacimiento;
+    private LocalDate fecha_nacimiento;
     private Integer año_egreso;
     private String nombre_colegio;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = true)
     @JoinColumn(name = "id_categoria")
     private CategoriaEntity categoria;
+
+    @ManyToOne(fetch = FetchType.EAGER, optional = true)
+    @JoinColumn(name = "id_metodo_pago")
+    private MetodoPagoEntity metodoPago;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "id_cuota")
@@ -44,16 +50,12 @@ public class EstudianteEntity {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "id_excedente")
     @JsonIgnore
-    private List<EstudianteEntity> excedentes = new ArrayList<>();
+    private List<ExcedenteEntity> excedentes = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "id_puntaje")
     @JsonIgnore
     private List<PuntajeEntity> puntajes = new ArrayList<>();
-
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "id_metodo_pago")
-    private MetodoPagoEntity metodoPago;
 }
 
 
