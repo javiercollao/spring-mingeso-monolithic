@@ -11,6 +11,7 @@ import spring.topeducation.entities.MetodoPagoEntity;
 import spring.topeducation.repository.*;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Component
@@ -84,30 +85,47 @@ public class DataSeeder implements ApplicationListener<ContextRefreshedEvent> {
 
 
         // Estudiante
-
+/*
         EstudianteEntity estudiante_1 = new EstudianteEntity();
         estudiante_1.setNombre("Javier");
         estudiante_1.setApellidos("Collao");
         estudiante_1.setRut("191772466");
         estudiante_1.setAño_egreso(2020);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Date fecha = sdf.parse("2005-10-01");
-        estudiante_1.setFecha_nacimiento(fecha);
+        estudiante_1.setFecha_nacimiento(LocalDate.now());
         estudiante_1.setAño_egreso(2014);
         estudiante_1.setNombre_colegio("Colegio Prueba");
+        estudiante_1.setCategoria(categoria_1);
+        estudiante_1.setMetodoPago(metodoPago_1);
+        estudianteRepository.save(estudiante_1);
 
 
-
-
-
-
-
-
+        EstudianteEntity estudiante_2 = new EstudianteEntity();
+        estudiante_2.setNombre("Roberto");
+        estudiante_2.setApellidos("Cortes");
+        estudiante_2.setRut("14093508");
+        estudiante_2.setAño_egreso(2021);
+        estudiante_2.setFecha_nacimiento(LocalDate.now());
+        estudiante_2.setAño_egreso(2014);
+        estudiante_2.setNombre_colegio("Colegio Prueba");
+        estudiante_2.setCategoria(categoria_3);
+        estudiante_2.setMetodoPago(metodoPago_2);
+        estudianteRepository.save(estudiante_2);
+*/
         // Cuotas
+            // paso 1: se agregan la forma de pago, se generan las cuotas
 
         // Pagos
 
+
         // Puntajes
+            // paso 1: se agregan los puntajes
+            // paso 2: se actualizan las cuotas del mes
+
+
+        // Excedente
+            // si el pago es al contado
+            // la cuota pagada se calcula el % de descuento
+            // se agrega a excedente
 
 
 
