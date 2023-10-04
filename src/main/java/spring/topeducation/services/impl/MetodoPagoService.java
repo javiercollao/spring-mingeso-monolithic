@@ -14,17 +14,12 @@ public class MetodoPagoService implements IMetodoPagoService {
     MetodoPagoRepository metodoPagoRepository;
 
     @Override
-    public MetodoPagoEntity crearMetodoPago(MetodoPagoEntity metodoPago) {
-        return null;
-    }
-
-    @Override
     public List<MetodoPagoEntity> listarMetodosDePago() {
-        return null;
+        return (List<MetodoPagoEntity>) metodoPagoRepository.findAll();
     }
 
     @Override
     public MetodoPagoEntity obtenerMetodoPagoPorId(Long id) {
-        return null;
+        return metodoPagoRepository.findById(id).orElse(null);
     }
 }
