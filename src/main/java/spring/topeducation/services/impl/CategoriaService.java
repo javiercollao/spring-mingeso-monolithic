@@ -6,23 +6,20 @@ import spring.topeducation.entities.CategoriaEntity;
 import spring.topeducation.repository.CategoriaRepository;
 import spring.topeducation.services.ICategoriaService;
 
+import java.util.List;
+
 @Service
 public class CategoriaService implements ICategoriaService {
     @Autowired
     CategoriaRepository categoriaRepository;
 
     @Override
-    public CategoriaEntity crearCategoria(CategoriaEntity categoria) {
-        return null;
+    public List<CategoriaEntity> listarCategorias() {
+        return (List<CategoriaEntity>) categoriaRepository.findAll();
     }
 
     @Override
     public CategoriaEntity obtenerCategoriaPorId(Long id) {
-        return null;
-    }
-
-    @Override
-    public CategoriaEntity actualizarCategoria(CategoriaEntity categoria, Long id) {
-        return null;
+        return categoriaRepository.findById(id).orElse(null);
     }
 }

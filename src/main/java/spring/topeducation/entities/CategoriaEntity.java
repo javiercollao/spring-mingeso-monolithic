@@ -20,6 +20,7 @@ public class CategoriaEntity {
     @Column(name="id_categoria", unique=true, nullable = false)
     private Long id_categoria;
     private String colegio_categoria;
+    private Integer numero_cuotas;
     private Double descuento;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
