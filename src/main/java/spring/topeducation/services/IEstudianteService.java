@@ -1,12 +1,13 @@
 package spring.topeducation.services;
 
+import spring.topeducation.dto.EstudianteDTO;
 import spring.topeducation.entities.EstudianteEntity;
 
 import java.util.List;
 
 public interface IEstudianteService {
-    public EstudianteEntity crearEstudiante(EstudianteEntity estudiante);
-    public List<EstudianteEntity> obtenerEstudiantePorRut(String rut);
-    public EstudianteEntity agregarMetodoPagoEstudiante(EstudianteEntity estudiante);
+    public void crearEstudiante(EstudianteDTO estudiante);
+    public List<EstudianteEntity> listarEstudiantes();
+    public EstudianteEntity obtenerEstudiantePorRut(String rut);
 
 }

@@ -7,4 +7,5 @@ import spring.topeducation.entities.EstudianteEntity;
 
 @Repository
 public interface EstudianteRepository extends JpaRepository<EstudianteEntity, Long> {
+    public EstudianteEntity findByRut(String rut);
 }

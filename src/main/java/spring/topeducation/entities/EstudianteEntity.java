@@ -29,16 +29,15 @@ public class EstudianteEntity {
     private Integer año_egreso;
     private String nombre_colegio;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = true)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "id_categoria")
     private CategoriaEntity categoria;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = true)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "id_metodo_pago")
     private MetodoPagoEntity metodoPago;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "id_cuota")
     @JsonIgnore
     private List<CuotaEntity> cuotas = new ArrayList<>();
 
