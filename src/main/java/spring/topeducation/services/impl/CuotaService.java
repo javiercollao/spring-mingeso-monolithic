@@ -11,7 +11,7 @@ import spring.topeducation.services.ICuotaService;
 
 import java.time.LocalDate;
 import java.time.Year;
-import java.util.ArrayList;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -112,14 +112,74 @@ public class CuotaService implements ICuotaService {
         cuotaRepository.save(cuotaMatricula);
     }
 
-
     @Override
-    public CuotaEntity actualizarEstadoCuota(CuotaEntity cuota, Long id) {
-        return null;
+    public CuotaEntity obtenerCuota(Long id) {
+        CuotaEntity cuota = cuotaRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("No se encontró la cuota con el ID proporcionado."));
+        return cuota;
     }
 
     @Override
-    public String calcularTotalArancelAPagar(Long id_estudiante, Integer year) {
-        return null;
+    public void aplicarIntereses(Long id) {
+        CuotaEntity cuota = cuotaRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("No se encontró la cuota con el ID proporcionado."));
+
+        Double interes = calculoDeIntereses(id);
+        Double totalCuota = cuota.getValor_cuota().doubleValue();
+        Double aplicacionInteres = totalCuota * (1 + interes);
+        Integer total = aplicacionInteres.intValue();
+
+        cuota.setValor_cuota(total);
+        cuotaRepository.save(cuota);
     }
+
+
+    @Override
+    public Double calculoDeIntereses(Long id) {
+        CuotaEntity cuota = cuotaRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("No se encontró la cuota con el ID proporcionado."));
+
+        if (!Objects.equals(cuota.getAsunto(), "Matrícula")) {
+            LocalDate fechaInicio = cuota.getFecha_inicio_pagar();
+            LocalDate fechaPlazoFinal = cuota.getFecha_inicio_deuda();
+            LocalDate fechaActual = LocalDate.now();
+
+            boolean fueraDelIntervalo = fechaActual.isAfter(fechaPlazoFinal);
+
+            if (fueraDelIntervalo) {
+                Long mesesDeAtraso = ChronoUnit.MONTHS.between(fechaInicio, fechaActual);
+                if (mesesDeAtraso < 0) {
+                     mesesDeAtraso =  0L;
+                }
+
+                Double interes = 0.0;
+                if (mesesDeAtraso == 0) {
+                    interes = 0.0;
+                } else if (mesesDeAtraso == 1) {
+                    interes = 0.03;
+                } else if (mesesDeAtraso == 2) {
+                    interes = 0.06;
+                } else if (mesesDeAtraso == 3) {
+                    interes = 0.09;
+                } else if (mesesDeAtraso > 3) {
+                    interes = 0.15;
+                }
+                return interes;
+            }
+        }
+
+        return 0.0;
+    }
+
+
+    @Override
+    public void confirmarPagoDeCuota(Long id) {
+        CuotaEntity cuota = cuotaRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("No se encontró la cuota con el ID proporcionado."));
+
+        cuota.setStatus_cuota("Pagado");
+        cuotaRepository.save(cuota);
+    }
+
+
 }
