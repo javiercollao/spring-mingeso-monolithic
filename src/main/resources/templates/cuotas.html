@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+      td{
+          vertical-align: middle;
+      }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="d-flex justify-content-center py-3">
+          <ul class="nav nav-pills">
+            <li class="nav-item"><a href="/" class="nav-link">Volver</a></li>
+          </ul>
+        </header>
+        <div class="container d-flex flex-wrap justify-content-center">
+          <a href="/" class="d-flex align-items-center mb-3 mb-lg-0 me-lg-auto link-body-emphasis text-decoration-none">
+             <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24"><path d="M17.673 5.606a3326.02 3326.02 0 0 1-5.671-2.674L.138 8.524l2.03.98L2 9.531V20h1v-9.626l.72-.124.28.135v5.288c0 .914 5.206 3.533 6.249 4.049a3.89 3.89 0 0 0 3.48-.026C20 16.486 20 15.895 20 15.673v-5.288l3.854-1.857s-3.8-1.801-6.181-2.922zM19 15.504a51.526 51.526 0 0 1-5.726 3.302 2.884 2.884 0 0 1-2.582.02A40.184 40.184 0 0 1 5 15.521v-4.655l7 3.373 7-3.373zm-7-2.373L5.416 9.958l6.469-1.115-.17-.987-7.85 1.354-1.403-.676 9.537-4.495c.825.393 8.523 4.014 9.542 4.494z"/><path fill="none" d="M0 0h24v24H0z"/></svg>
+            <span class="fs-4">Top Education</span>
+          </a> 
+        </div>
+        <div class="py-3">
+          <span class="fs-5">Cuotas Pendientes</span>
+          <table class="table table-hover">
+              <thead>
+                <tr> 
+                  <th>Nro.</th>
+                  <th>Asunto</th>
+                  <th>Status</th>
+                  <th>Monto</th> 
+                  <th>Fecha Inicio</th> 
+                  <th>Ultimo plazo</th>
+                  <th>Actualizar</th>
+                  <th>Pagar</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="cuota:${cuotas}">
+                  <td th:text="${cuota.id_cuota}"></td>
+                  <td th:text="${cuota.asunto}"></td>
+                  <td th:text="${cuota.status_cuota}"></td>
+                  <td th:text="${cuota.valor_cuota}"></td> 
+                  <td th:text="${cuota.fecha_inicio_pagar}"></td>
+                  <td th:text="${cuota.fecha_inicio_deuda}"></td>
+                  <td>
+                    <a th:href="@{/actualizar-cuota/{idCuota}(idCuota=${cuota.id_cuota})}" class="btn btn-secondary">
+                        Actualizar Monto
+                    </a>
+                  </td>
+                  <td>
+                    <a th:href="@{/pagar/{idCuota}(idCuota=${cuota.id_cuota})}" class="btn btn-primary">
+                      Pagar
+                    </a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+      </div>
+      <div class="py-3">
+        <span class="fs-5">Cuotas Pagadas</span>
+        <table class="table table-hover">
+            <thead>
+              <tr> 
+                <th>Nro.</th>
+                <th>Asunto</th>
+                <th>Status</th>
+                <th>Monto</th> 
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="pagado:${pagados}">
+                <td th:text="${pagado.id_cuota}"></td>
+                <td th:text="${pagado.asunto}"></td>
+                <td th:text="${pagado.status_cuota}"></td>
+                <td th:text="${pagado.valor_cuota}"></td>
+              </tr>
+            </tbody>
+          </table>
+    </div>
+    </div>
+</body>
+</html>
