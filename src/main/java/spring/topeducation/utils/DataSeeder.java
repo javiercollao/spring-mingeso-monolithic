@@ -59,16 +59,19 @@ public class DataSeeder implements ApplicationListener<ContextRefreshedEvent> {
         CategoriaEntity categoria_1 = new CategoriaEntity();
         categoria_1.setColegio_categoria("Municipal");
         categoria_1.setDescuento(0.2);
+        categoria_1.setNumero_cuotas(10);
         categoriaRepository.save(categoria_1);
 
         CategoriaEntity categoria_2 = new CategoriaEntity();
         categoria_2.setColegio_categoria("Subvencionado");
         categoria_2.setDescuento(0.1);
+        categoria_2.setNumero_cuotas(7);
         categoriaRepository.save(categoria_2);
 
         CategoriaEntity categoria_3 = new CategoriaEntity();
         categoria_3.setColegio_categoria("Privado");
         categoria_3.setDescuento(0.0);
+        categoria_3.setNumero_cuotas(4);
         categoriaRepository.save(categoria_3);
 
         // Metodos de Pago
