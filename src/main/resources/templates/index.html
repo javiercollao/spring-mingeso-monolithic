@@ -3,9 +3,220 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        td{
+            vertical-align: middle;
+        }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <header class="d-flex justify-content-center py-3">
+          <ul class="nav nav-pills">
+            <li class="nav-item"><a href="./" class="nav-link active" aria-current="page">Estudiantes</a></li>
+            <!-- <li class="nav-item"><a href="./cuotas" class="nav-link">Cuotas</a></li>
+            <li class="nav-item"><a href="./pagos" class="nav-link">Pagos</a></li>
+            <li class="nav-item"><a href="./reportes" class="nav-link">Reportes</a></li>  -->
+          </ul> 
+        </header>
 
-<h1>Hola mundo</h1>
+        <div class="container d-flex flex-wrap justify-content-between">
+            <a href="/" class="d-flex align-items-center mb-3 mb-lg-0 me-lg-auto link-body-emphasis text-decoration-none">
+               <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24"><path d="M17.673 5.606a3326.02 3326.02 0 0 1-5.671-2.674L.138 8.524l2.03.98L2 9.531V20h1v-9.626l.72-.124.28.135v5.288c0 .914 5.206 3.533 6.249 4.049a3.89 3.89 0 0 0 3.48-.026C20 16.486 20 15.895 20 15.673v-5.288l3.854-1.857s-3.8-1.801-6.181-2.922zM19 15.504a51.526 51.526 0 0 1-5.726 3.302 2.884 2.884 0 0 1-2.582.02A40.184 40.184 0 0 1 5 15.521v-4.655l7 3.373 7-3.373zm-7-2.373L5.416 9.958l6.469-1.115-.17-.987-7.85 1.354-1.403-.676 9.537-4.495c.825.393 8.523 4.014 9.542 4.494z"/><path fill="none" d="M0 0h24v24H0z"/></svg>
+              <span class="fs-4">Top Education</span>
+            </a> 
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalEstudiante">
+                Registrar Estudiante
+            </button>
+        </div>
+
+        <div class="py-3">
+            <table class="table table-hover">
+                <thead>
+                  <tr> 
+                    <th>Nro.</th>
+                    <th>Nombres</th>
+                    <th>Apellidos</th>
+                    <th>Rut</th> 
+                    <th>Tipo</th>  
+                    <th>Cuotas</th>
+                    <th>Reporte</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr th:each="estudiante:${estudiantes}">
+                    <td th:text="${estudiante.id_estudiante}"></td>
+                    <td th:text="${estudiante.nombre}"></td>
+                    <td th:text="${estudiante.apellidos}"></td>
+                    <td th:text="${estudiante.rut}"></td> 
+                    <td th:text="${estudiante.categoria.colegio_categoria}"></td>
+                    
+                    <td>
+                        <a th:href="@{/cuotas/{idEstudiante}(idEstudiante=${estudiante.id_estudiante})}" class="btn btn-dark">
+                            Ver Cuotas
+                        </a>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-warning">
+                            Crear Reporte
+                        </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+        </div>
+
+    </div>
+    <!-- Modal Registro Estudiante-->
+    <div class="modal fade" id="modalEstudiante" tabindex="-1" aria-labelledby="modalEstudianteLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="modalEstudianteLabel">Resgistar Estudiante</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/guardar-estudiante}" method="post" class="needs-validation" novalidate="">
+                    <div class="row">
+                      <div class="col-sm-6">
+                        <label for="nombre" class="form-label">Nombres</label>
+                        <input type="text" name="nombre" class="form-control" id="nombre" placeholder="" value="" required="">
+                        <div class="invalid-feedback">
+                          Requerido
+                        </div>
+                      </div>
+          
+                      <div class="col-sm-6">
+                        <label for="apellidos" class="form-label">Apellidos</label>
+                        <input type="text" name="apellidos" class="form-control" id="apellidos" placeholder="" value="" required="">
+                        <div class="invalid-feedback">
+                           Requerido
+                        </div>
+                      </div>
+          
+                      <div class="col-6 mt-1">
+                        <label for="rut" class="form-label">RUT</label>
+                        <div class="input-group has-validation"> 
+                          <input type="text" name="rut" class="form-control" id="rut" placeholder="Sin puntos ni guión" required="">
+                        <div class="invalid-feedback">
+                            Requerido
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-6 mt-1">
+                        <label for="anoEgreso" class="form-label">Año Egreso</label>
+                        <div class="input-group has-validation"> 
+                          <input type="text" name="anoEgreso" class="form-control" id="anoEgreso" placeholder="" required="">
+                        <div class="invalid-feedback">
+                            Requerido
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-6 mt-1">
+                        <label for="fechaNacimiento" class="form-label">Fecha Nacimiento</label>
+                        <div class="input-group has-validation"> 
+                          <input type="date" name="fechaNacimiento" class="form-control" id="fechaNacimiento" placeholder="" required="">
+                        <div class="invalid-feedback">
+                            Requerido
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-12 mt-1">
+                        <label for="nombreColegio" class="form-label">Nombre Colegio</label>
+                        <div class="input-group has-validation"> 
+                          <input type="text" name="nombreColegio" class="form-control" id="nombreColegio" placeholder="" required="">
+                        <div class="invalid-feedback">
+                            Requerido
+                          </div>
+                        </div>
+                      </div>
+          
+                      <div class="col-md-6 mt-1">
+                        <label for="idCategoria" class="form-label">Tipo Colegio</label>
+                        <select class="form-select"  name="idCategoria" id="idCategoria" required=""> 
+                          <option th:each="categoria:${categorias}" th:value="${categoria.id_categoria}" th:text="${categoria.colegio_categoria}"></option>
+                        </select>
+                        <div class="invalid-feedback">
+                          Please select a valid country.
+                        </div>
+                      </div>
+
+                      <div class="col-md-6 mt-1">
+                        <label for="idMetodoPago" class="form-label">Metodo de Pago</label>
+                        <select class="form-select" name="idMetodoPago" id="idMetodoPago" required="">
+                          <option th:each="metodo:${metodospago}" th:value="${metodo.id_metodo_pago}" th:text="${metodo.tipo_pago}"></option>
+                        </select>
+                        <div class="invalid-feedback">
+                          Please select a valid country.
+                        </div>
+                      </div>
+                    </div> 
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+              <button type="submit" class="btn btn-primary">Guardar</button>
+            </div>
+           </form>
+          </div>
+        </div>
+    </div>
+
+      <!-- Modal Cuota-->
+      <div class="modal fade" id="modalCuota" tabindex="-1" aria-labelledby="modalCuota" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="modalCuotaLabel">Modal title</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-hover">
+                    <thead>
+                      <tr>
+                        <th>Cuota. No.</th>
+                        <th>Valor</th>
+                        <th>Status</th>
+                        <th>Dscto</th>
+                        <th>Valor con dscto</th> 
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>1</td>
+                        <td>200.000</td>
+                        <td>Pagado</td>
+                        <td>0.0</td>
+                        <td>200.000</td>
+                      </tr> 
+                      <tr>
+                        <td>2</td>
+                        <td>200.000</td>
+                        <td>Pendiente</td>
+                        <td>0.0</td>
+                        <td>200.000</td>
+                      </tr> 
+                    </tbody>
+                  </table>
+                  <table class="table table-hover">
+                    <tbody>
+                      <tr> 
+                        <td>Total</td>
+                        <td>1.500.000</td>
+                      </tr>
+                    </tbody>
+                  </table>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      
 </body>
 </html>
