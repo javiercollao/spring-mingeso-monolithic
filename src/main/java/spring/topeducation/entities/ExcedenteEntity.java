@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -18,9 +19,9 @@ public class ExcedenteEntity {
     @Column(name="id_excedente", unique=true, nullable = false)
     private Long id_excedente;
     private Integer monto;
-    private Date fecha_de_pago;
+    private LocalDate fecha_de_pago;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = true)
     @JoinColumn(name = "id_estudiante")
     private EstudianteEntity estudiante;
 }
