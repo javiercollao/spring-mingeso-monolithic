@@ -2,17 +2,18 @@ package spring.topeducation.services.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import spring.topeducation.entities.CategoriaEnum;
 import spring.topeducation.entities.CuotaEntity;
 import spring.topeducation.entities.EstudianteEntity;
-import spring.topeducation.entities.MetodoPagoEntity;
+import spring.topeducation.entities.MetodoPagoEnum;
 import spring.topeducation.repository.CuotaRepository;
 import spring.topeducation.repository.EstudianteRepository;
 import spring.topeducation.services.ICuotaService;
 
 import java.time.LocalDate;
 import java.time.Year;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.time.temporal.ChronoUnit;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
@@ -23,6 +24,10 @@ public class CuotaService implements ICuotaService {
 
     @Autowired
     EstudianteRepository estudianteRepository;
+
+    @Autowired
+    PagoService pagoService;
+
     @Override
     public List<CuotaEntity> obtenerCuotasDePagoEstudiante(Long id_estudiante) {
         EstudianteEntity estudiante = estudianteRepository.findById(id_estudiante)
@@ -31,57 +36,36 @@ public class CuotaService implements ICuotaService {
         return cuotas;
     }
 
-    @Override
-    public void generarCuotasDePagoArancel(Long id_estudiante) {
-        EstudianteEntity estudiante = estudianteRepository.findById(id_estudiante)
-                .orElseThrow(() -> new NoSuchElementException("No se encontró al estudiante con el ID proporcionado."));
-
-        Double descuentoCategoria = estudiante.getCategoria().getDescuento();
-        Double descuentoMetodoPago = estudiante.getMetodoPago().getDescuento();
-        Double descuentoPorEgreso = calculoDescuentoPorEgreso(estudiante.getAño_egreso());
-        Double descuento = descuentoCategoria + descuentoMetodoPago + descuentoPorEgreso;
-        Double totalArancel = 1500000.0;
-        Double aplicacionDescto = totalArancel * (1 - descuento);
-
-        Integer totalArancelConDescuento = aplicacionDescto.intValue();
-
-        Integer numeroCuotas;
-        if (Objects.equals(estudiante.getMetodoPago().getTipo_pago(), "Al Contado")){
-            numeroCuotas = 1;
-        }else {
-            numeroCuotas = estudiante.getCategoria().getNumero_cuotas();
-        }
-
-        Integer montoCuota = totalArancelConDescuento / numeroCuotas;
-        Integer remanente = totalArancelConDescuento % numeroCuotas;
-
-        LocalDate fechaInicioPagar = LocalDate.now().withDayOfMonth(5);
-        LocalDate fechaInicioDeuda = LocalDate.now().withDayOfMonth(10);
-
-        for (int i = 0; i < numeroCuotas; i++) {
-            int numero = i + 1;
-            CuotaEntity cuotaArancel = new CuotaEntity();
-
-            if (i == numeroCuotas - 1 && remanente > 0) {
-                cuotaArancel.setValor_cuota(montoCuota + remanente);
-            } else {
-                cuotaArancel.setValor_cuota(montoCuota);
-            }
-
-            cuotaArancel.setAsunto("Cuota Arancel " + numero);
-            cuotaArancel.setStatus_cuota("Pendiente");
-            cuotaArancel.setFecha_inicio_pagar(fechaInicioPagar.plusMonths(i));
-            cuotaArancel.setFecha_inicio_deuda(fechaInicioDeuda.plusMonths(i));
-            cuotaArancel.setEstudiante(estudiante);
-            cuotaRepository.save(cuotaArancel);
+    public Double obtenerDescuentoPorCategoria(CategoriaEnum categoriaEnum) {
+        switch (categoriaEnum) {
+            case PRIVADO:
+                return 0.0;
+            case SUBVENCIONADO:
+                return 0.1;
+            case MUNICIPAL:
+                return 0.2;
+            default:
+                return 0.0;
         }
     }
 
-    public Double calculoDescuentoPorEgreso(Integer añoEgreso){
+    public Double obtenerDescuentoPorMetodoDePago(MetodoPagoEnum metodoPagoEnum){
+        switch (metodoPagoEnum) {
+            case CUOTAS:
+                return 0.0;
+            case CONTADO:
+                return 0.5;
+            default:
+                return 0.0;
+        }
+    }
+
+    public Double obtenerDescuentoPorAnioDeEgreso(Integer anioEgreso){
         Year year = Year.now();
         Integer añoActual = year.getValue();
-        Integer diff = añoActual - añoEgreso;
+        Integer diff = añoActual - anioEgreso;
         Double dcto;
+
         if (diff < 1){
             dcto = 0.15;
         } else if (diff <= 2 ) {
@@ -94,9 +78,86 @@ public class CuotaService implements ICuotaService {
         return dcto;
     }
 
+    public Integer obtenerNumeroDeCuotas(MetodoPagoEnum metodoPagoEnum, CategoriaEnum categoriaEnum){
+        switch (metodoPagoEnum) {
+            case CUOTAS:
+                return obtenerNumeroDeCuotasPorCategoria(categoriaEnum);
+            case CONTADO:
+                return 1;
+            default:
+                return 1;
+        }
+    }
+
+    public Integer obtenerNumeroDeCuotasPorCategoria(CategoriaEnum categoriaEnum){
+        switch (categoriaEnum) {
+            case MUNICIPAL:
+                return 10;
+            case SUBVENCIONADO:
+                return 7;
+            case PRIVADO:
+                return 4;
+            default:
+                return 1;
+        }
+    }
+
+    private Double calcularDescuentoTotal(EstudianteEntity estudiante) {
+        Double descuentoCategoria = obtenerDescuentoPorCategoria(estudiante.getCategoria());
+        Double descuentoMetodoPago = obtenerDescuentoPorMetodoDePago(estudiante.getMetodoPago());
+        Double descuentoPorEgreso = obtenerDescuentoPorAnioDeEgreso(estudiante.getAnio_egreso());
+        return descuentoCategoria + descuentoMetodoPago + descuentoPorEgreso;
+    }
+
+    private Integer calcularArancelConDescuento(Double descuentoTotal) {
+        double totalArancel = 1500000.0;
+        Double aplicacionDescto = totalArancel * (1 - descuentoTotal);
+        Integer arancelConDescuento = aplicacionDescto.intValue();
+        return arancelConDescuento;
+    }
+
 
     @Override
-    public void generarCuotaMatricula(Long id_estudiante) {
+    public void generarCuotasDePagoArancel(Long id_estudiante) {
+        EstudianteEntity estudiante = estudianteRepository.findById(id_estudiante)
+                .orElseThrow(() -> new NoSuchElementException("No se encontró al estudiante con el ID proporcionado."));
+
+        Double descuentoTotal = calcularDescuentoTotal(estudiante);
+        Integer totalArancelConDescuento = calcularArancelConDescuento(descuentoTotal);
+        Integer numeroCuotas = obtenerNumeroDeCuotas(estudiante.getMetodoPago(),estudiante.getCategoria());
+
+        Integer montoCuota = totalArancelConDescuento / numeroCuotas;
+        Integer remanente = totalArancelConDescuento % numeroCuotas;
+
+        LocalDate fechaInicioPagar = LocalDate.now().withDayOfMonth(5);
+        LocalDate fechaInicioDeuda = LocalDate.now().withDayOfMonth(10);
+
+        for (Integer i = 0; i < numeroCuotas; i++) {
+            CuotaEntity cuotaArancel = crearCuotaArancel(montoCuota, remanente, fechaInicioPagar, fechaInicioDeuda, estudiante, numeroCuotas, i);
+            cuotaRepository.save(cuotaArancel);
+        }
+    }
+
+
+    private CuotaEntity crearCuotaArancel(Integer montoCuota, Integer remanente, LocalDate fechaInicioPagar, LocalDate fechaInicioDeuda, EstudianteEntity estudiante, Integer numeroCuotas, Integer i) {
+        Integer numero = i + 1;
+        CuotaEntity cuotaArancel = new CuotaEntity();
+        if (i == numeroCuotas - 1 && remanente > 0) {
+            cuotaArancel.setValor_cuota(montoCuota + remanente);
+        } else {
+            cuotaArancel.setValor_cuota(montoCuota);
+        }
+        cuotaArancel.setAsunto("Cuota Arancel " + numero);
+        cuotaArancel.setStatus_cuota("Pendiente");
+        cuotaArancel.setFecha_inicio_pagar(fechaInicioPagar.plusMonths(i));
+        cuotaArancel.setFecha_inicio_deuda(fechaInicioDeuda.plusMonths(i));
+        cuotaArancel.setEstudiante(estudiante);
+        return cuotaArancel;
+    }
+
+
+    @Override
+    public void crearCuotaMatricula(Long id_estudiante) {
         EstudianteEntity estudiante = estudianteRepository.findById(id_estudiante)
                 .orElseThrow(() -> new NoSuchElementException("No se encontró al estudiante con el ID proporcionado."));
 
@@ -176,10 +237,9 @@ public class CuotaService implements ICuotaService {
     public void confirmarPagoDeCuota(Long id) {
         CuotaEntity cuota = cuotaRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("No se encontró la cuota con el ID proporcionado."));
-
         cuota.setStatus_cuota("Pagado");
         cuotaRepository.save(cuota);
+        pagoService.crearPago(cuota.getEstudiante(), cuota.getValor_cuota());
     }
-
 
 }
