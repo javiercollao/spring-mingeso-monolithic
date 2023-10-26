@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -26,35 +25,34 @@ public class EstudianteEntity {
     private String nombre;
     private String apellidos;
     private LocalDate fecha_nacimiento;
-    private Integer año_egreso;
+    private Integer anio_egreso;
     private String nombre_colegio;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @Enumerated(EnumType.STRING)
     @JoinColumn(name = "id_categoria")
-    private CategoriaEntity categoria;
+    private CategoriaEnum categoria;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @Enumerated(EnumType.STRING)
     @JoinColumn(name = "id_metodo_pago")
-    private MetodoPagoEntity metodoPago;
+    private MetodoPagoEnum metodoPago;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "estudiante")
     @JsonIgnore
     private List<CuotaEntity> cuotas = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "id_pago")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "estudiante")
     @JsonIgnore
     private List<PagoEntity> pagos = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "id_excedente")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "estudiante")
     @JsonIgnore
     private List<ExcedenteEntity> excedentes = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "id_puntaje")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "estudiante")
     @JsonIgnore
     private List<PuntajeEntity> puntajes = new ArrayList<>();
+
+
 }
 
 
