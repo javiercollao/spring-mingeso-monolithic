@@ -4,20 +4,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import spring.topeducation.dto.EstudianteDTO;
-import spring.topeducation.entities.CategoriaEntity;
 import spring.topeducation.entities.CuotaEntity;
 import spring.topeducation.entities.EstudianteEntity;
-import spring.topeducation.entities.MetodoPagoEntity;
-import spring.topeducation.services.impl.CategoriaService;
+import spring.topeducation.entities.PuntajeEntity;
 import spring.topeducation.services.impl.CuotaService;
 import spring.topeducation.services.impl.EstudianteService;
-import spring.topeducation.services.impl.MetodoPagoService;
+import spring.topeducation.services.impl.ExcelService;
+import spring.topeducation.utils.ExcelHelper;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -27,26 +26,30 @@ public class HomeController {
     EstudianteService estudianteService;
 
     @Autowired
-    CategoriaService categoriaService;
-
-    @Autowired
-    MetodoPagoService metodoPagoService;
-
-    @Autowired
     CuotaService cuotaService;
 
-
+    @Autowired
+    ExcelService excelService;
 
     @GetMapping("/")
     public String index(
             Model model
     ){
         List<EstudianteEntity> estudiantesList = estudianteService.listarEstudiantes();
-        List<CategoriaEntity> categoriasList = categoriaService.listarCategorias();
-        List<MetodoPagoEntity> metodosDePagoList = metodoPagoService.listarMetodosDePago();
+
+        List<List<String>> categoriasList = new ArrayList<>();
+        categoriasList.add(new ArrayList<>(List.of("MUNICIPAL", "Municipal")));
+        categoriasList.add(new ArrayList<>(List.of("SUBVENCIONADO", "Subvencionado")));
+        categoriasList.add(new ArrayList<>(List.of("PRIVADO", "Privado")));
+
+        List<List<String>> metodosDePagoList = new ArrayList<>();
+        metodosDePagoList.add(new ArrayList<>(List.of("CONTADO", "Al contado")));
+        metodosDePagoList.add(new ArrayList<>(List.of("CUOTAS", "En cuotas")));
+
         model.addAttribute("estudiantes", estudiantesList);
         model.addAttribute("metodospago", metodosDePagoList);
         model.addAttribute("categorias", categoriasList);
+
         return "index";
     }
 
@@ -56,7 +59,7 @@ public class HomeController {
             @RequestParam("nombre") String nombre,
             @RequestParam("apellidos") String apellidos,
             @RequestParam("fechaNacimiento") String fechaNacimiento,
-            @RequestParam("anoEgreso") String anoEgreso,
+            @RequestParam("anioEgreso") String anioEgreso,
             @RequestParam("nombreColegio") String nombreColegio,
             @RequestParam("idCategoria") String idCategoria,
             @RequestParam("idMetodoPago") String idMetodoPago
@@ -68,7 +71,7 @@ public class HomeController {
                 .nombre(nombre)
                 .apellidos(apellidos)
                 .fecha_nacimiento(parsedDate)
-                .año_egreso(anoEgreso)
+                .anio_egreso(anioEgreso)
                 .nombre_colegio(nombreColegio)
                 .id_categoria(idCategoria)
                 .id_metodo_pago(idMetodoPago)
@@ -91,6 +94,7 @@ public class HomeController {
         return "cuotas";
     }
 
+
     @GetMapping("/pagar/{id}")
     public String pagos(
             @PathVariable(value = "id") Long id
@@ -107,6 +111,40 @@ public class HomeController {
         CuotaEntity cuota = cuotaService.obtenerCuota(id);
         cuotaService.aplicarIntereses(id);
         return "redirect:/cuotas/"+cuota.getEstudiante().getId_estudiante();
+    }
+
+
+    @PostMapping("/upload")
+    public String uploadFile(
+            @RequestParam("file") MultipartFile file
+    ) {
+        String message = "";
+
+        if (ExcelHelper.hasExcelFormat(file)) {
+            try {
+                excelService.save(file);
+                return "redirect:/puntajes";
+            } catch (Exception e) {
+                // message = "No se pudieron subir los datos: " + file.getOriginalFilename() + "!";
+                return "redirect:/puntajes";
+            }
+        }
+
+        // message = "Please upload an excel file!";
+        return "redirect:/puntajes";
+    }
+
+    @GetMapping("/puntajes")
+    public String obtenerTodosLosPuntajes(
+            Model model
+    ) {
+        try {
+            List<PuntajeEntity> puntajes = excelService.obtenerTodosLosPuntajes();
+            model.addAttribute("puntajes", puntajes);
+            return "redirect:/puntajes";
+        } catch (Exception e) {
+            return "redirect:/puntajes";
+        }
     }
 
 }
